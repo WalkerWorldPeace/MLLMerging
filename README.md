@@ -1,6 +1,6 @@
 <div align='center'>
 
-# Unifying Multimodal Large Language Model Capabilities and Modalities via Model Merging
+# OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
 
 </div>
 
