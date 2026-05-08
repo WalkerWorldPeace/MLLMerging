@@ -1,6 +1,6 @@
 <div align='center'>
 
-# [ICLR2026] OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
+# [ICLR 2026] OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
 
 </div>
 
