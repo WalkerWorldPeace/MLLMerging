@@ -1,6 +1,6 @@
 <div align='center'>
 
-# OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
+# [ICLR2026] OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
 
 </div>
 
@@ -156,3 +156,13 @@ This project thanks the following open source communities for their contribution
 - [LMMs-Eval](https://github.com/EvolvingLMMs-Lab/lmms-eval)
 
 Thanks to them for their contributions to the development of model training and evaluation tools!
+
+## Citation
+If you find OptMerge useful for your research and applications, please cite using this BibTeX:
+```bash
+@article{wei2025optmerge,
+  title={OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging},
+  author={Wei, Yongxian and Cheng, Runxi and Jin, Weike and Yang, Enneng and Shen, Li and Hou, Lu and Du, Sinan and Yuan, Chun and Cao, Xiaochun and Tao, Dacheng},
+  journal={arXiv preprint arXiv:2505.19892},
+  year={2025}
+}
