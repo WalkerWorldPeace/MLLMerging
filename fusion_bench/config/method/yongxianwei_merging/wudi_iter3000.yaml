@@ -1,0 +1,19 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: wudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # Test the under-convergence hypothesis directly: same Adam optimizer
+  # and lr as paper-default WUDI, but 10x more iterations. Sign-based
+  # Adam with eps=1e-8 takes coordinate steps ~lr=1e-5; 300 steps moves
+  # ~3e-3 from sum-init, while iwudi minimum is ~1.0 away. 3000 steps
+  # should bridge that gap if Adam is not stuck at a different attractor.
+  iter_num: 3000
+  learning_rate: 1.0e-5
+  optimizer: adam
+  eps: 1.0e-8
+  log_norm_history: true

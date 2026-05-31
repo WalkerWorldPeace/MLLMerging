@@ -2,7 +2,10 @@ set -x
 
 CHECKPOINT=${1}
 DATASET=${2}
-CHECKPOINT="$(pwd)/${CHECKPOINT}"
+# Only prepend pwd when CHECKPOINT is a relative path; absolute paths are kept as-is.
+if [[ "${CHECKPOINT}" != /* ]]; then
+  CHECKPOINT="$(pwd)/${CHECKPOINT}"
+fi
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 echo "CHECKPOINT: ${CHECKPOINT}"
 

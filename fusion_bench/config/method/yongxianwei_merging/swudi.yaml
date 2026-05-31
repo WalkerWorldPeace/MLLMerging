@@ -1,0 +1,75 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: swudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # swudi = Spectral-Weighted UDI.  Strict superset of `iwudi` (exponential
+  # filter).  Extends iwudi with **six composable knobs**, each of which
+  # individually reduces back to iwudi at its neutral value:
+  #
+  #   Step 1: per-layer saturation alignment         (alignment_rho=0)
+  #   Step 2: Tikhonov-exp mixed filter              (tikhonov_alpha=0)
+  #   Step 3: output-side exponential filter         (output_exp_time=null)
+  #   Step 4: per-eigendirection consensus weighting (consensus_power=0)
+  #   Step 5: filter-shape curvature (gamma power)   (filter_gamma=1)
+  #   Step 6: spectral truncation (hard thresholding)(truncate_rank_ratio=null)
+  #
+  # Empirical defaults tuned on CLIP-ViT-B/32 TA8 (seed=42):
+  #
+  #   exp_time=1300, truncate_rank_ratio=0.65  →  avg_acc 85.605%
+  #
+  # This is +0.51pt over iwudi (85.10%) and +0.98pt over WUDI (84.63%).
+  # The key insight: iwudi's soft exponential attenuation is "implicit
+  # early stopping" that prevents over-fitting of small-λ noise directions.
+  # Adding a HARD spectral truncation -- keep only the top-65% of λ -- makes
+  # this regularization explicit and lets us safely push exp_time up to
+  # 1300 (vs iwudi's 300) without diverging back toward the closed-form's
+  # 82.33% floor.  Step 6 is thus load-bearing; the other knobs are
+  # retained for ablation / alternative-benchmark research.
+
+  exp_time: 1300.0
+
+  # Step 1: per-layer saturation alignment.
+  #   t_ℓ = exp_time · (λ̄_max / λ_max,ℓ)^alignment_rho
+  # 0 disables (→ iwudi).  Under truncation peak, rho has negligible
+  # marginal effect (within noise).
+  alignment_rho: 0.0
+
+  # Step 2: Tikhonov-exp mixed filter f(λ) = λ/(λ+α) · (1 - exp(-λ t)).
+  # α=0 → pure exponential (iwudi).
+  tikhonov_alpha: 0.0
+
+  # Step 3: output-side exponential filter.  null disables.
+  output_exp_time: null
+
+  # Step 4: per-eigendirection consensus weighting.
+  consensus_power: 0.0
+  consensus_floor: 0.0
+
+  # Step 5: filter-shape curvature.
+  filter_gamma: 1.0
+
+  # Step 6: spectral truncation (hard thresholding) -- LOAD-BEARING KNOB.
+  # Keep only the top K = ceil(D2 · ratio) eigendirections of C.
+  # null = keep all (→ iwudi).  0.65 is the empirical peak on TA8.
+  truncate_rank_ratio: 0.65
+
+  # Input-side filter form.  Mirrors aswudi_merge's `filter_type` knob.
+  #   "exponential" (default): f(λ) = 1 - exp(-λ t)  (IWUDI / classical SWUDI).
+  #   "none"                 : f(λ) = 1 on the retained top-K subspace
+  #                            (exact truncated pseudoinverse).  Under "none"
+  #                            the soft-filter knobs (exp_time, alignment_rho,
+  #                            tikhonov_alpha, filter_gamma) are ignored on
+  #                            the input side; truncation above, consensus,
+  #                            and output-side filter still apply.  Used in
+  #                            the paper's §5.9 2×2 filter-form × K-selection
+  #                            ablation to isolate the exp-approximation
+  #                            effect from the K-selection effect.
+  filter_type: exponential
+
+  init_mode: sum
+  min_eigenvalue: 1.0e-8

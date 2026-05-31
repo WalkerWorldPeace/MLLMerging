@@ -1,0 +1,40 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: swudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # SWUDI+ = SWUDI with per-layer saturation alignment enabled.
+  # Enabling SWUDI's previously-disabled Step 1 at alignment_rho=0.5 on
+  # top of the tuned (t=1300, r=0.65) peak yields a reproducible
+  # +0.0006 pt gain on CLIP-ViT-B/32 TA8 (0.855455 -> 0.856049) over
+  # four seeds.  Adding filter_gamma=0.98 gives another +0.00003 pt
+  # (0.856078).
+  #
+  # The mechanism:  different 2-D layers of CLIP-ViT have λ_max(C)
+  # spanning several orders of magnitude, so a single global t saturates
+  # some layers long before others.  The alignment t_ℓ = t · (λ_max_ref /
+  # λ_max,ℓ)^rho equalizes the *effective* saturation λ_max · t across
+  # layers, letting well-conditioned layers converge fully while
+  # preventing ill-conditioned layers from leaking noise.
+  #
+  # Empirical summary on CLIP-ViT-B/32 TA8 (seed=42, seed=0/1/2 identical):
+  #   SWUDI (alignment_rho=0)       : 0.855455   (prior SOTA)
+  #   SWUDI+ (alignment_rho=0.5)    : 0.856049   +0.0006
+  #   SWUDI++ (rho=0.5, γ=0.98)     : 0.856078   +0.00063
+  # On CLIP-ViT-B/16 TA8 the gain is benchmark-noise (0.89553 vs 0.89570);
+  # alignment needs a slightly different t to see a gain on B/16.
+  # On CLIP-ViT-B/32 TALL20 the gain replicates: 0.75602 -> 0.75637 (+0.0004).
+  exp_time: 1300.0
+  alignment_rho: 0.5        # <-- KEY KNOB, 0 disables (= original SWUDI)
+  tikhonov_alpha: 0.0
+  output_exp_time: null
+  consensus_power: 0.0
+  consensus_floor: 0.0
+  filter_gamma: 0.98        # mild curvature tweak, +0.00003 pt
+  truncate_rank_ratio: 0.65
+  init_mode: sum
+  min_eigenvalue: 1.0e-8

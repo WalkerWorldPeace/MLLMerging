@@ -1,0 +1,28 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: iwudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # -- Spectral filter selection --
+  # Empirical peaks on CLIP-ViT-B/32 TA8 (seed=42):
+  #   tikhonov:    ~83.17% @ α=0.01 (outperforms CF but loses to WUDI/Adam)
+  #   landweber:   85.00% @ n=150, η_r=0.9 (exact GD spectral analog)
+  #   exponential: 85.10% @ t=300 (continuous GD, smoothest peak)
+  # exponential chosen as default: best accuracy and only one hyperparameter.
+  filter_type: exponential
+  # -- Exponential filter: f(λ) = 1 - exp(-λ · exp_time) --
+  # Peak around t=300-500; concave shape from 50→300→5000.
+  exp_time: 300.0
+  # -- Landweber (alternative, closed-form equivalent of GD) --
+  # f(λ) = 1 - (1 - η λ)^n,  η = landweber_eta_ratio / max(eigvals(C))
+  landweber_steps: 150
+  landweber_eta_ratio: 0.9
+  # -- Tikhonov (ridge) --
+  tikhonov_alpha: 0.01
+  # -- Common --
+  init_mode: sum          # "sum" (WUDI-compatible) or "zero"
+  min_eigenvalue: 1.0e-8  # eigenvalue floor, guards 1/λ for rank-deficient C

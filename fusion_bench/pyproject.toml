@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fusion-bench"
+description = "A Comprehensive Benchmark of Deep Model Fusion (with the spectral-regularization WUDI / SWUDI / ASWUDI extension)"
+readme = "README.md"
+version = "0.2.32"
+authors = [{ name = "MLLMerging Authors" }]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">= 3.10" # Python 3.10+ for pattern matching support
+dependencies = [
+    # Core training / config
+    "hydra-core",
+    "omegaconf",
+    "lightning",
+    # Models / weights
+    "transformers!=4.49", # Known issue with version 4.49 when running flan-t5 inference
+    "datasets",
+    "peft",
+    "huggingface_hub",
+    "safetensors",
+    "einops",
+    # Numerics
+    "scipy",
+    "h5py",
+    # Utilities
+    "matplotlib",
+    "tensorboard",
+    "tqdm",
+    "rich",
+    "joblib",
+    "bidict",
+    "pillow!=11.2.1", # Known issue with version 11.2.1 when loading food101 dataset
+    # Test framework (kept as runtime dep so tests/ work after `pip install -e .`)
+    "pytest",
+]
+keywords = ["deep learning", "model fusion", "model merging", "spectral regularization", "benchmark"]
+
+[project.urls]
+Repository = "https://github.com/WalkerWorldPeace/MLLMerging"
+Homepage   = "https://github.com/WalkerWorldPeace/MLLMerging"
+Issues     = "https://github.com/WalkerWorldPeace/MLLMerging/issues"
+
+[project.scripts]
+fusion_bench = "fusion_bench.scripts.cli:_hydra_main"
+fusion_bench_webui = "fusion_bench.scripts.webui:main"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "fusion_bench" = "fusion_bench" }
+
+[tool.setuptools.package-data]
+fusion_bench = [
+    '../fusion_bench_config/**/*',
+    'models/model_card_templates/**/*',
+]
+
+[tool.isort]
+profile = "black"
+
+[project.optional-dependencies]
+# Llama-3.2-3B MergeBench evaluation (via lm-evaluation-harness)
+lm-eval-harness = ["lm-eval", "immutabledict", "langdetect", "rich-run"]
+# Multimodal LLM line (Qwen2-VL / InternVL2.5 + VLMEvalKit / lmms-eval)
+mllm = ["qwen_vl_utils", "timm", "decord"]
+# Documentation site
+docs = ["mkdocs", "mkdocs-material", "mkdocstrings[python]"]

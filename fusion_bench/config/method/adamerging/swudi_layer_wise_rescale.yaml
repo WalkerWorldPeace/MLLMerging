@@ -1,0 +1,49 @@
+# SWUDI layer-wise test-time rescaling.
+#
+# Single merged task vector control experiment for AdaMerging × SWUDI.
+#
+# Form:
+#   W_l = W_base,l + beta_l * (W_swudi,l - W_base,l)
+# beta_l init=1.0 -> the wrapped model starts strictly equal to SWUDI; only
+# beta_l is optimized via test-time entropy minimization on the 8 CLIP test
+# datasets, using the same loss / zero-shot heads / dataloader as
+# adamerging/clip.
+
+_target_: fusion_bench.method.adamerging.clip_layer_wise_rescale.CLIPLayerWiseRescaleAlgorithm
+_recursive_: false
+
+# `merged_model_name` is auto-detected when the modelpool has exactly one
+# non-pretrained model. Override here if needed.
+merged_model_name: null
+
+# beta_l initial value.  1.0 = start at the merged checkpoint.
+init_value: 1.0
+
+# Optional: load beta from a .pt file and skip TTA.
+weights: null
+
+# Optimizer
+optimizer: adam
+lr: 1.0e-4
+
+# Whether to clamp beta_l to [0, 1].  We disable this so beta can move freely.
+clamp_weights: false
+
+# `functional_call` knobs
+tie_weights: true
+strict: false
+
+# Overridden by `fabric.devices` when launched from CLI.
+devices: 1
+batch_size: 16
+num_workers: 8
+max_steps: 200
+fast_dev_run: ${fast_dev_run}
+
+# Save the learned beta tensor.  Set to a path to enable.
+save_merging_weights: 'beta_weights.pt'
+
+# Threshold for "deviation from 1.0" stat in the final summary.
+beta_one_eps: 1.0e-3
+
+cache_dir: outputs

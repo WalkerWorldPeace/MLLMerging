@@ -1,0 +1,28 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: wudi2
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # wudi2 = per-task SVD-truncated WUDI (a.k.a. "OptMerge" in MLLMerging).
+  #
+  # Replaces WUDI's per-task quadratic loss
+  #   L_i = (1/||v_i||²) · ||(θ - v_i) v_i^T||_F²
+  # with
+  #   L_i = (1/||v_i||²) · ||(θ - taskvector_i) low_rank_i^T||_F²
+  # where, for each task vector v_i (m×n) with K = ⌊min(m,n)/N⌋ by default:
+  #   * taskvector_i = top-K SVD of (v_i - mean(v)) + mean(v)   (denoised target)
+  #   * low_rank_i   = S_K · V^H_K of v_i                       (truncated projector)
+  #
+  # The optimization loop is identical to WUDI (Adam, init θ_0 = Σ v_i).
+  # Defaults below match the MLLMerging script byte-for-byte.
+
+  iter_num: 300
+  learning_rate: 0.00001
+
+  # Per-task truncation rank. null = use 1/N (matching original wudi2).
+  # Override with a float in (0, 1] to use ⌈min(m,n) · ratio⌉ instead.
+  truncate_rank_ratio: null

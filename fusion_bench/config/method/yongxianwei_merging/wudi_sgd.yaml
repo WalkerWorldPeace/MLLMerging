@@ -1,0 +1,17 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: wudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # R3 -- WUDI loss with SGD optimizer (avoids Adam's 2nd-moment amplification
+  # on near-rank-deficient LoRA spectra). lr is 100x Adam's because there is
+  # no per-parameter normalization. Same iter_num as the paper-default WUDI.
+  iter_num: 300
+  learning_rate: 1.0e-3
+  optimizer: sgd
+  momentum: 0.0
+  log_norm_history: true

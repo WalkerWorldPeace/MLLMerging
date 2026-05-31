@@ -1,0 +1,31 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: aswudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # ASWUDI + Path A "loss elbow" rank rule.  Per layer, K* is chosen
+  # as the earliest rank such that the residual WUDI proxy loss
+  # ``L_fit(K) = ‖θ_K C - D‖_F²`` falls to a fraction ``frac`` of its
+  # K=0 value.  This is a knee detector on WUDI's own quadratic
+  # objective — no rule comparison, no architecture-specific
+  # heuristic, no continuous scalar tuning when ``frac`` is set to
+  # the principled default 0.01.
+  #
+  # Override `auto_rank_method` to `loss_elbow_<frac>` (e.g.
+  # `loss_elbow_0.005`, `loss_elbow_0.05`) to sweep the elbow
+  # threshold; default ``loss_elbow`` ≡ ``loss_elbow_0.01``.
+  auto_rank_method: loss_elbow
+
+  filter_type: none
+  exp_time: 1.0e6
+
+  rank_scale: 1.0
+  min_rank: 1
+  max_rank_ratio: 1.0
+
+  init_mode: sum
+  min_eigenvalue: 1.0e-8

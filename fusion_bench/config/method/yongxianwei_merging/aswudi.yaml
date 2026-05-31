@@ -1,0 +1,57 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: aswudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # aswudi = Adaptive SWUDI. Zero-hyperparameter per-layer data-free rank
+  # selection + truncated pseudoinverse. Replaces SWUDI's globally tuned
+  # (exp_time=1300, truncate_rank_ratio=0.65) with an intrinsic per-layer
+  # criterion on the spectrum of C.
+  #
+  # Supported auto_rank_method values (see functional.aswudi_merge for detail):
+  #   none                       -- keep all D2 dirs (equiv. to closed-form WUDI)
+  #   stable_rank                -- ||C||_F² / λ_max²                 (very low K)
+  #   entropy                    -- exp(-Σ p log p), p=λ/Σλ           (moderate K)
+  #   entropy_sq                 -- entropy on λ²                     (lower K)
+  #   participation              -- (Σλ)² / Σλ²                       (inverse participation)
+  #   participation_sqrt         -- IPR on √λ  (DEFAULT; empirical sweet spot)
+  #   participation_sqrt_plus    -- participation_sqrt · log-correction
+  #   gavish_donoho              -- Gavish-Donoho 2014 optimal hard threshold
+  #   d_aware_participation_sqrt -- IPR on θ*_CF per-direction energy (uses D)
+  #   d_aware_cumvar             -- cumulative energy of θ*_CF ≥ 0.99
+  #   d_aware_entropy            -- entropy on θ*_CF per-direction energy
+  #   cumvar_<frac>              -- smallest K with top-K eigsum ≥ frac (e.g. cumvar_0.95)
+  #
+  # Benchmark on CLIP-ViT-B/32 TA8 (seed=42, deterministic):
+  #   stable_rank              -> 65.01 (too aggressive, mean K/D2 ≈ 0.006)
+  #   entropy                  -> 85.18
+  #   entropy_sq               -> 79.47
+  #   participation            -> 84.21
+  #   participation_sqrt       -> 85.53 ←  DEFAULT (zero-hyperparameter!)
+  #   gavish_donoho            -> 85.00
+  #   d_aware_participation_sqrt -> 85.23
+  #   d_aware_entropy          -> 85.47
+  # For comparison: iwudi (SWUDI t=300,r=1.0) = 85.10; SWUDI (t=1300, r=0.65,
+  # tuned via grid search) = 85.55.  ASWUDI's default nearly matches SWUDI's
+  # grid-searched peak without any hyperparameter tuning.
+  auto_rank_method: participation_sqrt
+
+  # Filter applied inside the preserved rank-K subspace.
+  # "none"        -- hard truncation: θ = D · C_K^{+}                (recommended)
+  # "exponential" -- soft: θ = θ_0 + (θ*_K − θ_0)·V·diag(1−e^{−λ t})·V^T
+  filter_type: none
+  exp_time: 1.0e6      # only used when filter_type="exponential"
+
+  # Optional multiplicative scaling of the data-free rank (default 1 = pure).
+  rank_scale: 1.0
+
+  # Safety bounds on K (clamped after the auto criterion + rank_scale).
+  min_rank: 1
+  max_rank_ratio: 1.0
+
+  init_mode: sum       # "sum" (WUDI-style) or "zero"
+  min_eigenvalue: 1.0e-8

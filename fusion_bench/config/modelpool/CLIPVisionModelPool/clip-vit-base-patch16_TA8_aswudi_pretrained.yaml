@@ -1,0 +1,37 @@
+# CLIP-ViT-B/16 TA8 modelpool with ASWUDI-merged checkpoint as `_pretrained_`,
+# for the AdaMerging × ASWUDI experiment.
+
+defaults:
+  - /dataset/image_classification/train@train_datasets:
+      - sun397
+      - stanford-cars
+      - resisc45
+      - eurosat
+      - svhn
+      - gtsrb
+      - mnist
+      - dtd
+  - /dataset/image_classification/test@test_datasets:
+      - sun397
+      - stanford-cars
+      - resisc45
+      - eurosat
+      - svhn
+      - gtsrb
+      - mnist
+      - dtd
+  - _self_
+_target_: fusion_bench.modelpool.CLIPVisionModelPool
+_recursive_: False
+processor: openai/clip-vit-base-patch16
+models:
+  _pretrained_: outputs/yongxianwei_merging/merged_clip/aswudi_b16_full
+  sun397: tanganke/clip-vit-base-patch16_sun397
+  stanford-cars: tanganke/clip-vit-base-patch16_stanford-cars
+  resisc45: tanganke/clip-vit-base-patch16_resisc45
+  eurosat: tanganke/clip-vit-base-patch16_eurosat
+  svhn: tanganke/clip-vit-base-patch16_svhn
+  gtsrb: tanganke/clip-vit-base-patch16_gtsrb
+  mnist: tanganke/clip-vit-base-patch16_mnist
+  dtd: tanganke/clip-vit-base-patch16_dtd
+platform: hf

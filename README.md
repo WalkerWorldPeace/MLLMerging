@@ -1,3 +1,51 @@
+<div align="center">
+
+# Closed-Form Spectral Regularization for Multi-Task Model Merging
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./fusion_bench/LICENSE)
+[![ICLR](https://img.shields.io/badge/ICLR-2026-darkgreen.svg)](#iclr-2026-optmerge-unifying-multimodal-llm-capabilities-and-modalities-via-model-merging)
+
+</div>
+
+> Originally published as **OptMerge** at ICLR 2026. The current release adds
+> the **SWUDI / ASWUDI** spectral-filtering family and unifies
+> multimodal LLM, CLIP-ViT, Flan-T5 and Llama-3.2 merging benchmarks.
+
+## Two reproduction lines
+
+| Line | Models | Code | Reproduction |
+|---|---|---|---|
+| **MLLM** | Qwen2-VL-7B, InternVL2.5-1B + 5 expert each | `LLaMA-Factory/swudi_aswudi.py`<br>`LLaMA-Factory/run_merge.py`<br>`LLaMA-Factory/run_merge_internvl.py` | [`fusion_bench/README.md`](./fusion_bench/README.md) §3.4 |
+| **CLIP / Flan-T5 / Llama** | CLIP-ViT B/32, B/16, L/14 (TA8 / TALL20)<br>Flan-T5-base + 8 GLUE LoRA experts<br>Llama-3.2-3B + 5 MergeBench experts | `fusion_bench/fusion_bench/method/yongxianwei_merging/`<br>`fusion_bench/config/method/yongxianwei_merging/*.yaml` | [`fusion_bench/README.md`](./fusion_bench/README.md) §3.1 – §3.3 |
+
+The two lines share the same SWUDI / ASWUDI math; the MLLM line keeps a
+math-identical standalone copy at `LLaMA-Factory/swudi_aswudi.py` so MLLM
+merging can run without installing the full `fusion_bench` package.
+
+## Quick start
+
+```bash
+git clone https://github.com/WalkerWorldPeace/MLLMerging.git
+cd MLLMerging
+
+# A. CLIP / Flan-T5 / Llama line (Hydra-driven `fusion_bench` package)
+cd fusion_bench && pip install -e . && cd ..
+
+# B. MLLM line (Qwen2-VL / InternVL2.5)
+cd LLaMA-Factory && pip install -e ".[torch,metrics]" --no-build-isolation && cd ..
+cd VLMEvalKit    && pip install -e .                                       && cd ..
+cd lmms-eval     && pip install -e .                                       && cd ..
+
+# Smoke test
+cd fusion_bench && python -m unittest discover -v -s tests -p "test_*.py" && cd ..
+python LLaMA-Factory/sanity_red_minimal.py
+```
+
+> **Use separate conda environments for lines A and B** — `fusion_bench` pins
+> `transformers==4.46.3` while the MLLM line pins `4.45.2`; installing both into
+> one env breaks the pin. See [`fusion_bench/README.md`](./fusion_bench/README.md) §1
+> for the full four-environment matrix.
+
 <div align='center'>
 
 # [ICLR 2026] OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging
@@ -159,10 +207,11 @@ Thanks to them for their contributions to the development of model training and 
 
 ## Citation
 If you find OptMerge useful for your research and applications, please cite using this BibTeX:
-```bash
+```bibtex
 @article{wei2025optmerge,
   title={OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging},
   author={Wei, Yongxian and Cheng, Runxi and Jin, Weike and Yang, Enneng and Shen, Li and Hou, Lu and Du, Sinan and Yuan, Chun and Cao, Xiaochun and Tao, Dacheng},
   journal={arXiv preprint arXiv:2505.19892},
   year={2025}
 }
+```

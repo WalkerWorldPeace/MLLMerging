@@ -1,0 +1,24 @@
+_target_: fusion_bench.method.yongxianwei_merging.algorithm.YongxianweiMergingAlgorithm
+_recursive_: false
+method_name: aswudi
+scaling_coefficient: 1.0
+exclude_param_names_regex: []
+merge_device: null
+load_on_cpu: false
+strict: false
+method_kwargs:
+  # ASWUDI with the (1+c²) bias-correction rank rule from the PDF
+  # analysis §6.  Under the flat-spike model a_k = √λ_k = μ(1+δ_k)
+  # with E[δ²] = c², the moment-match rule K_√λ under-estimates oracle
+  # K by approximately a factor 1/(1+c²).  participation_sqrt_c2
+  # estimates ĉ² from the variance of √λ on the top-K_0 directions and
+  # rescales K_0 by (1+ĉ²).  Zero hyperparameter, zero extra compute
+  # beyond participation_sqrt.
+  auto_rank_method: participation_sqrt_c2
+  filter_type: none
+  exp_time: 1.0e6
+  rank_scale: 1.0
+  min_rank: 1
+  max_rank_ratio: 1.0
+  init_mode: sum
+  min_eigenvalue: 1.0e-8

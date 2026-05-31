@@ -1,0 +1,21 @@
+# =============================================================================
+# FusionBench Method Configuration: DARE + Task Arithmetic (Causal LM)
+# =============================================================================
+# DARE random dropout on task vectors, followed by Task Arithmetic. For
+# MergeBench Llama-3.2-3B use `merge_backbone=true` so that embed_tokens and
+# lm_head are kept from the pretrained model (avoids 128256 vs 128320 shape
+# mismatch).
+# =============================================================================
+_target_: fusion_bench.method.dare.DareTaskArithmeticForCausalLM
+# Task Arithmetic scaling factor
+scaling_factor: 0.3
+# DARE random-drop probability
+sparsity_ratio: 0.5
+# Whether to drop only nn.Linear weights (slower) or all parameters
+only_on_linear_weights: false
+# Whether to rescale surviving entries by 1/(1-sparsity_ratio)
+rescale: true
+# Merge only model.layers (recommended for MergeBench)
+merge_backbone: true
+# Path to save the merged model
+model_save_path: ${path.log_dir}/checkpoint

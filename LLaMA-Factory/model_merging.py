@@ -641,7 +641,8 @@ def wudi_merging2(merged_model: nn.Module, models_to_merge: list, exclude_param_
     
     return merged_params
 
-def merge_models(merge_method="wudi2", scaling_coefficient = 1.0):
+def merge_models(merge_method="wudi2", scaling_coefficient=1.0,
+                 output_path="merged_model_name", method_kwargs=None):
     print("Start merging models...")
     base_model = models['a']#.cuda()
     base_state_dict = base_model.state_dict()
@@ -744,6 +745,28 @@ def merge_models(merge_method="wudi2", scaling_coefficient = 1.0):
             exclude_param_names_regex=exclude_param_names_regex,
             scaling_coefficient=scaling_coefficient
         )
+    elif merge_method == "swudi":
+        print("Running swudi (spectral filter + hard truncation)...")
+        from swudi_aswudi import swudi_merge
+        kw = dict(method_kwargs or {})
+        merged_params = swudi_merge(
+            base_model=base_model,
+            finetuned_models=models_to_merge,
+            exclude_param_names_regex=exclude_param_names_regex,
+            scaling_coefficient=float(scaling_coefficient),
+            **kw,
+        )
+    elif merge_method == "aswudi":
+        print("Running aswudi (per-layer adaptive rank)...")
+        from swudi_aswudi import aswudi_merge
+        kw = dict(method_kwargs or {})
+        merged_params = aswudi_merge(
+            base_model=base_model,
+            finetuned_models=models_to_merge,
+            exclude_param_names_regex=exclude_param_names_regex,
+            scaling_coefficient=float(scaling_coefficient),
+            **kw,
+        )
     else:
         raise ValueError(f"Unknown merge_method: {merge_method}")
 
@@ -753,7 +776,6 @@ def merge_models(merge_method="wudi2", scaling_coefficient = 1.0):
     base_model.load_state_dict(base_state_dict)
     base_model = base_model.cuda()
 
-    output_path = 'merged_model_name'
     print(f"Saving model to {output_path}")
     base_model.save_pretrained(output_path)
     processor.save_pretrained(output_path)

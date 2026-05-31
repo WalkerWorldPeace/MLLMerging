@@ -1,0 +1,112 @@
+# ============================================================================
+# MLLMerging 仓库 .gitignore（2026-05-31 开源整合）
+# ============================================================================
+
+# --- 内嵌第三方 fork 的独立 .git（绝对不能进主仓）---
+**/InternVL/.git/
+**/LLaMA-Factory/.git/
+**/lmms-eval/.git/
+**/VLMEvalKit/.git/
+**/ModelCompose/.git/
+
+# --- 实验产物 / 缓存 ---
+/outputs/
+/outputs*/
+/results/
+/temp/
+mlruns/
+lightning_logs/
+wandb/
+profile_report.html
+*.log
+*.out
+*.err
+*.pid
+
+# --- HuggingFace / lm-eval / VLMEvalKit 数据缓存 ---
+/.cache/
+/hub/
+/datasets/
+/LMUData/
+
+# --- 大模型 / 数据二进制 ---
+*.safetensors
+*.bin
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.gguf
+*.arrow
+*.parquet
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# --- Python / pip ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.python-version
+.venv/
+venv/
+
+# --- 测试 / lint 缓存 ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- 编辑器 / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.cursorignore
+.cursorindexingignore
+.claude/settings.local.json
+.vscode/launch.json
+.vscode/settings.json
+*.code-workspace
+
+# --- 凭证（永远不能 push）---
+.env
+.env.local
+.env.*
+!.env.template
+
+# --- LaTeX 编译产物 ---
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+
+# --- fusion_bench 子目录早期遗留 ---
+/fusion_bench/fusion_bench.egg-info/
+/fusion_bench/datasets/
+/fusion_bench/.cache/
+/fusion_bench/hub/
+/fusion_bench/outputs/
+/fusion_bench/outputs*/
+
+# --- HuggingFace evaluate metric runtime metadata (auto-generated, contains
+# absolute paths from the machine that ran evaluate.load); the .py modules
+# next to it are kept as an offline backup, only the .json is excluded. ---
+fusion_bench/modules/evaluate_modules/metrics/**/*.json

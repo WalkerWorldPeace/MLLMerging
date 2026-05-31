@@ -1,0 +1,23 @@
+# CLIP-ViT-B/16 TA8 modelpool for SWUDI layer-wise test-time rescaling.
+#
+# Same setup as the B/32 variant: `_pretrained_` is base CLIP, `swudi` is the
+# B/16 SWUDI merged checkpoint.
+
+defaults:
+  - /dataset/image_classification/test@test_datasets:
+      - sun397
+      - stanford-cars
+      - resisc45
+      - eurosat
+      - svhn
+      - gtsrb
+      - mnist
+      - dtd
+  - _self_
+_target_: fusion_bench.modelpool.CLIPVisionModelPool
+_recursive_: False
+processor: openai/clip-vit-base-patch16
+models:
+  _pretrained_: openai/clip-vit-base-patch16
+  swudi: outputs/yongxianwei_merging/merged_clip/swudi_b16_full
+platform: hf

@@ -1,4 +1,4 @@
-dataset_path: /efs/wyx/lmms-eval/RefCOCOplus
+dataset_path: lmms-lab/RefCOCOplus
 output_type: generate_until
 process_docs: !function utils_rec.refcoco_bbox_rec_preprocess_dataset
 doc_to_visual: !function utils_rec.refcoco_bbox_rec_doc_to_visual

@@ -1,0 +1,18 @@
+# =============================================================================
+# FusionBench Method Configuration: Isotropic Merging in Common Subspace (Causal LM)
+# =============================================================================
+# Iso-C (Marczak et al., 2025) adapted for CausalLM. With `merge_backbone=true`
+# only `model.layers` is merged; embed_tokens and lm_head are kept from the
+# pretrained model (bypasses MergeBench vocab-expansion shape mismatch).
+# =============================================================================
+_target_: fusion_bench.method.isotropic_merging.IsotropicMergingInCommonSubspaceForCausalLM
+# Scaling factor applied to the isotropic-subspace task vector before adding to
+# the pretrained model. The Iso-C paper's CLIP sweep finds optimum at 1.0;
+# conservative default for LLMs is 0.3 (matches TIES/TA default scaling).
+scaling_factor: 0.3
+# Optional regex-free key list to skip (ignored when merge_backbone=true)
+exclude_keys: []
+# Merge only model.layers (recommended for MergeBench)
+merge_backbone: true
+# Path to save the merged model
+model_save_path: ${path.log_dir}/checkpoint

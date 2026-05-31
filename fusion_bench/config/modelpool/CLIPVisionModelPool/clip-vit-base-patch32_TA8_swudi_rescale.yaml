@@ -1,0 +1,25 @@
+# CLIP-ViT-B/32 TA8 modelpool for SWUDI layer-wise test-time rescaling.
+#
+# `_pretrained_` is the **base** CLIP, and `swudi` is the single merged
+# checkpoint that defines the task vector Delta = W_swudi - W_base.
+# Test datasets are kept (8 TA8 tasks) for entropy minimization and for
+# final taskpool evaluation.
+
+defaults:
+  - /dataset/image_classification/test@test_datasets:
+      - sun397
+      - stanford-cars
+      - resisc45
+      - eurosat
+      - svhn
+      - gtsrb
+      - mnist
+      - dtd
+  - _self_
+_target_: fusion_bench.modelpool.CLIPVisionModelPool
+_recursive_: False
+processor: openai/clip-vit-base-patch32
+models:
+  _pretrained_: openai/clip-vit-base-patch32
+  swudi: outputs/yongxianwei_merging/merged_clip/swudi_b32_full
+platform: hf
