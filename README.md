@@ -11,7 +11,7 @@
 > the **SWUDI / ASWUDI** spectral-filtering family and unifies
 > multimodal LLM, CLIP-ViT, Flan-T5 and Llama-3.2 merging benchmarks.
 
-## Two reproduction lines
+## Guidances
 
 | Line | Models | Code | Reproduction |
 |---|---|---|---|
@@ -41,9 +41,7 @@ cd fusion_bench && python -m unittest discover -v -s tests -p "test_*.py" && cd 
 python LLaMA-Factory/sanity_red_minimal.py
 ```
 
-> **Use separate conda environments for lines A and B** — `fusion_bench` pins
-> `transformers==4.46.3` while the MLLM line pins `4.45.2`; installing both into
-> one env breaks the pin. See [`fusion_bench/README.md`](./fusion_bench/README.md) §1
+> **Use separate conda environments for lines A and B**. See [`fusion_bench/README.md`](./fusion_bench/README.md) §1
 > for the full four-environment matrix.
 
 <div align='center'>
@@ -208,10 +206,10 @@ Thanks to them for their contributions to the development of model training and 
 ## Citation
 If you find OptMerge useful for your research and applications, please cite using this BibTeX:
 ```bibtex
-@article{wei2025optmerge,
+@inproceedings{wei2025optmerge,
   title={OptMerge: Unifying Multimodal LLM Capabilities and Modalities via Model Merging},
   author={Wei, Yongxian and Cheng, Runxi and Jin, Weike and Yang, Enneng and Shen, Li and Hou, Lu and Du, Sinan and Yuan, Chun and Cao, Xiaochun and Tao, Dacheng},
-  journal={arXiv preprint arXiv:2505.19892},
-  year={2025}
+  booktitle={ICLR},
+  year={2026}
 }
 ```
