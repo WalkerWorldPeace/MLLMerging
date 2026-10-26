@@ -14,7 +14,7 @@ def get_eval(content: str, max_tokens: int):
     while True:
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-4',
+                model='gpt-5.6-sol',
                 messages=[{
                     'role': 'system',
                     'content': 'You are a helpful and precise assistant for checking the quality of the answer.'
@@ -22,8 +22,7 @@ def get_eval(content: str, max_tokens: int):
                     'role': 'user',
                     'content': content,
                 }],
-                temperature=0.2,  
-                max_tokens=max_tokens,
+                max_completion_tokens=max_tokens,
             )
             break
         except openai.error.RateLimitError:
@@ -59,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--answer-list', nargs='+', default=[])
     parser.add_argument('-r', '--rule')
     parser.add_argument('-o', '--output')
-    parser.add_argument('--max-tokens', type=int, default=1024, help='maximum number of tokens produced in the output')
+    parser.add_argument('--max-tokens', type=int, default=4096, help='maximum number of tokens produced in the output')
     args = parser.parse_args()
 
     ray.init()
